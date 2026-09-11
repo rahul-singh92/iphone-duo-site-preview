@@ -40,19 +40,46 @@ export default function DeviceFrame({ mode, orientation, transition, url, refres
     return () => observer.disconnect();
   }, [dims.totalWidth, dims.totalHeight]);
 
+  // Replace your existing useEffect in DeviceFrame.js with this:
   useEffect(() => {
+    let isMounted = true;
     setLoading(true);
     setIframeError(false);
 
+    async function checkUrl() {
+      try {
+        const response = await fetch(`/api/check-frame?url=${encodeURIComponent(url)}`);
+        const data = await response.json();
+        
+        if (isMounted && !data.canEmbed) {
+          setIframeError(true);
+          setLoading(false);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setIframeError(true);
+          setLoading(false);
+        }
+      }
+    }
+
+    checkUrl();
+
+    // Fallback timeout just in case it takes too long to load
     const timeout = window.setTimeout(() => {
-      setLoading((currentLoading) => {
-        if (!currentLoading) return currentLoading;
-        setIframeError(true);
-        return false;
-      });
+      if (isMounted) {
+        setLoading((currentLoading) => {
+          if (!currentLoading) return currentLoading;
+          setIframeError(true);
+          return false;
+        });
+      }
     }, LOAD_TIMEOUT_MS);
 
-    return () => window.clearTimeout(timeout);
+    return () => {
+      isMounted = false;
+      window.clearTimeout(timeout);
+    };
   }, [iframeKey]);
 
   function handleIframeLoad() {
