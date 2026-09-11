@@ -139,7 +139,7 @@ export default function HomePage() {
         {/* New GitHub Star CTA */}
         <p style={{ marginTop: '16px' }}>
           <a 
-            href="https://github.com/rahul-singh92" 
+            href="https://github.com/rahul-singh92/iphone-duo-site-preview" 
             target="_blank" 
             rel="noreferrer" 
             style={{ color: 'inherit', textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
